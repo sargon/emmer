@@ -1,6 +1,6 @@
 import threading
 
-from utility import lock
+from .utility import lock
 
 
 def check_for_conversation_existence(alternate_return_value):
@@ -88,7 +88,7 @@ class ConversationTable(object):
     @property
     def conversations(self):
         """Returns a list of all conversations currently stored"""
-        return self.conversation_table.values()
+        return list(self.conversation_table.values())
 
     def __len__(self):
         """Returns the number of conversations in the ConversationTable"""

@@ -3,9 +3,9 @@ import calendar
 import threading
 import time
 
-import packets
-from response_router import WriteBuffer
-from utility import lock
+from . import packets
+from .response_router import WriteBuffer
+from .utility import lock
 
 UNINITIALIZED = 0
 WRITING = 1

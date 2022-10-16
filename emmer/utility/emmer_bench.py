@@ -52,7 +52,7 @@ def run_conversation(state, thread_num):
     sock.bind(("0.0.0.0", port))
 
     packet_data =  packets.ReadRequestPacket(state.get_filename(), "netascii").pack()
-    print state.host, state.port
+    print((state.host, state.port))
     sock.sendto(packet_data, (state.host, state.port))
 
     finished = False
@@ -60,7 +60,7 @@ def run_conversation(state, thread_num):
         response = sock.recvfrom(1024)
         packet_data = response[0]
         response_packet = packets.unpack_packet(packet_data)
-        print "  [thread_num: %s][outward_port: %s] received %s" % (thread_num, port, response_packet)
+        print(("  [thread_num: %s][outward_port: %s] received %s" % (thread_num, port, response_packet)))
 
         # A data packet of under size 512 is considered a final packet
         if len(response_packet.data) < 512:
@@ -74,7 +74,7 @@ def run_conversation(state, thread_num):
             time.sleep(20)
 
         ack_packet =  packets.AcknowledgementPacket(response_packet.block_num)
-        print "  [%s][%s] sending %s" % (thread_num, port, ack_packet)
+        print(("  [%s][%s] sending %s" % (thread_num, port, ack_packet)))
         sock.sendto(ack_packet.pack(), (state.host, state.port))
 
     sock.close()
@@ -95,9 +95,9 @@ def run_thread(state, thread_num):
             state.lock.release()
 
 def usage_and_exit():
-    print "Usage: %s hostname filename..." % sys.argv[0]
-    print "Blasts a TFTP server with lousy requests"
-    print FLAGS
+    print(( "Usage: %s hostname filename..." % sys.argv[0]))
+    print( "Blasts a TFTP server with lousy requests")
+    print( FLAGS)
     exit(1)
 
 def main():
@@ -118,7 +118,7 @@ def main():
                           filenames)
 
     # Spawn and run threads
-    for i in xrange(state.concurrency):
+    for i in range(state.concurrency):
         th = threading.Thread(target=run_thread, args=(state, i))
         state.threads.append(th)
         th.start()

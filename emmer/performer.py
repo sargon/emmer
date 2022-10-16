@@ -3,9 +3,9 @@ import logging
 import time
 import threading
 
-import packets
-import tftp_conversation
-from utility import lock
+from . import packets
+from . import tftp_conversation
+from .utility import lock
 
 
 class Performer(object):

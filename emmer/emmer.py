@@ -1,11 +1,11 @@
 import socket
-import thread
+import _thread
 
-import config
-from conversation_table import ConversationTable
-from reactor import Reactor
-from response_router import ResponseRouter
-from performer import Performer
+from . import config
+from .conversation_table import ConversationTable
+from .reactor import Reactor
+from .response_router import ResponseRouter
+from .performer import Performer
 
 
 class Emmer(object):
@@ -63,7 +63,7 @@ class Emmer(object):
           tftp conversations.
         """
         self.sock.bind((self.host, self.port))
-        print "TFTP Server running at %s:%s" % (self.host, self.port)
-        thread.start_new_thread(self.performer.run,
+        print(("TFTP Server running at %s:%s" % (self.host, self.port)))
+        _thread.start_new_thread(self.performer.run,
                                 (config.PERFORMER_THREAD_INTERVAL,))
         self.reactor.run()

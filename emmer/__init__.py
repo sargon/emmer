@@ -1,1 +1,1 @@
-from emmer import Emmer
+from .emmer import Emmer

@@ -83,7 +83,7 @@ def options_dictionary_to_string(options_dictionary):
     Sorted in order of key
     """
     ops = []
-    for (key, value) in sorted(options_dictionary.iteritems()):
+    for (key, value) in sorted(options_dictionary.items()):
         ops.append(key)
         ops.append(value)
     ops_string = "\x00".join(ops)
@@ -97,7 +97,7 @@ def options_list_to_dictionary(options_list):
     Returns a dictionary of those keys and values.
     """
     options = dict([(options_list[i*2], options_list[i*2+1])
-                    for i in xrange(len(options_list) / 2)])
+                    for i in range(len(options_list) / 2)])
     return options
 
 

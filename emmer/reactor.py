@@ -1,8 +1,8 @@
 import logging
-import thread
+import _thread
 
-import packets
-from tftp_conversation import TFTPConversation
+from . import packets
+from .tftp_conversation import TFTPConversation
 
 
 class Reactor(object):
@@ -33,7 +33,7 @@ class Reactor(object):
         """
         while True:
             data, addr = self.sock.recvfrom(1024)
-            thread.start_new_thread(self.handle_message,
+            _thread.start_new_thread(self.handle_message,
                                     (self.sock, addr, data))
 
     def handle_message(self, sock, addr, data):
