@@ -41,14 +41,14 @@ def unpack_packet(packet_data):
     try:
         opcode = bytes_to_int(packet_data[0:2])
         if opcode == READ_REQUEST_OPCODE:
-            split_data = packet_data[2:].split("\x00")
-            filename = split_data[0]
+            split_data = packet_data[2:].split(b"\x00")
+            filename = split_data[0].decode("utf-8")
             mode = split_data[1]
             options = options_list_to_dictionary(split_data[2:-1])
             return ReadRequestPacket(filename, mode, options)
         elif opcode == WRITE_REQUEST_OPCODE:
-            split_data = packet_data[2:].split("\x00")
-            filename = split_data[0]
+            split_data = packet_data[2:].split(b"\x00")
+            filename = split_data[0].decode("utf-8")
             mode = split_data[1]
             options = options_list_to_dictionary(split_data[2:-1])
             return WriteRequestPacket(filename, mode, options)
@@ -64,8 +64,8 @@ def unpack_packet(packet_data):
             error_message = packet_data[4:-1]
             return ErrorPacket(error_code, error_message)
         # TODO: Add method for error response, Code 4, Illegal TFTP Operation
-    except:
-        logging.warn("Invalid packet %s" % packet_data)
+    except Exception as e:
+        logging.warn(f"Invalid packet \"{ packet_data }\"",e)
     return NoOpPacket()
 
 
@@ -96,8 +96,11 @@ def options_list_to_dictionary(options_list):
 
     Returns a dictionary of those keys and values.
     """
+    if len(options_list) % 2 == 1:
+        raise Exception(f"Option list is not dividable by 2")
+
     options = dict([(options_list[i*2], options_list[i*2+1])
-                    for i in range(len(options_list) / 2)])
+                    for i in range(round(len(options_list) / 2))])
     return options
 
 
@@ -128,8 +131,8 @@ class ReadRequestPacket(object):
         opcode_encoded = int_to_bytes(self.opcode)
         ops_string = options_dictionary_to_string(self.options)
 
-        return (opcode_encoded + self.filename + "\x00" + self.mode
-            + "\x00" + ops_string)
+        return (opcode_encoded + self.filename.encode('utf-8') + b"\x00" + self.mode.encode('utf-8')
+            + b"\x00" + ops_string.encode('utf-8'))
 
     def __str__(self):
         """ Return a human readable string describing the contents of the
@@ -160,7 +163,7 @@ class WriteRequestPacket(object):
         """
         opcode_encoded = int_to_bytes(self.opcode)
         ops_string = options_dictionary_to_string(self.options)
-        return (opcode_encoded + self.filename + "\x00" + self.mode
+        return (opcode_encoded + self.filename.encode('utf-8') + "\x00" + self.mode.encode('utf-8')
                 + "\x00" + ops_string)
 
     def __str__(self):
@@ -190,7 +193,7 @@ class DataPacket(object):
         """
         opcode_encoded = int_to_bytes(self.opcode)
         block_num_encoded = int_to_bytes(self.block_num)
-        return opcode_encoded + block_num_encoded + self.data
+        return opcode_encoded + block_num_encoded + self.data.encode('utf-8')
 
     def __str__(self):
         """ Return a human readable string describing the contents of the
@@ -247,7 +250,7 @@ class ErrorPacket(object):
         opcode_encoded = int_to_bytes(self.opcode)
         error_code_encoded = int_to_bytes(self.error_code)
         return (opcode_encoded + error_code_encoded
-                + self.error_message + "\x00")
+                + self.error_message.encode('utf-8') + b"\x00")
 
     def __str__(self):
         """ Return a human readable string describing the contents of the

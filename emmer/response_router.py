@@ -143,7 +143,7 @@ class WriteBuffer(object):
     Retrieve the data from the `data` property.
     """
     def __init__(self):
-        self.data = ""
+        self.data = b''
 
     def receive_data(self, data):
         """Write some more data to the WriteBuffer """

@@ -14,7 +14,7 @@ def example_action(client_host, client_port, filename):
 @app.route_write(".*")
 def example_action(client_host, client_port, filename, data):
     output_file = open(filename, "w")
-    output_file.write(data)
+    output_file.write(str(data))
 
 if __name__ == "__main__":
     app.run()
