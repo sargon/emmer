@@ -88,14 +88,17 @@ class TFTPConversation(object):
             a packet object with which to send back to the client.
         """
         assert self.state == UNINITIALIZED
-        if isinstance(packet, packets.ReadRequestPacket):
-            return self._handle_initial_read_packet(packet)
-        if isinstance(packet, packets.WriteRequestPacket):
-            return self._handle_initial_write_packet(packet)
-        else:
-            self.state = COMPLETED
-            return packets.ErrorPacket(5, "Unknown transfer tid."
-                "Host: %s, Port: %s" % (self.client_host, self.client_port))
+        try:
+
+            if isinstance(packet, packets.ReadRequestPacket):
+                return self._handle_initial_read_packet(packet)
+            if isinstance(packet, packets.WriteRequestPacket):
+                return self._handle_initial_write_packet(packet)
+            else:
+                self.state = COMPLETED
+                return packets.ErrorPacket(5, "Unknown transfer tid. Host: %s, Port: %s" % (self.client_host, self.client_port))
+        except Exception as e:
+            return packets.ErrorPacket(5, str(e) )
 
     def _handle_initial_read_packet(self, packet):
         """Check if there is an application action to respond to this
