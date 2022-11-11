@@ -7,6 +7,8 @@ from . import packets
 from . import tftp_conversation
 from .utility import lock
 
+logger = logging.getLogger(__name__)
+
 
 class Performer(object):
     """A Performer class runs background tasks on the TFTP server such as:
@@ -35,14 +37,14 @@ class Performer(object):
     def run(self, sleep_interval):
         while True:
             try:
-                logging.debug(self.conversation_table)
+                logger.debug(self.conversation_table)
                 self.conversation_table.lock.acquire()
                 self.find_and_handle_stale_conversations()
                 self.sweep_completed_conversations()
                 self.conversation_table.lock.release()
                 time.sleep(sleep_interval)
             except Exception as ex:
-                logging.debug("\033[31m%s\033[0m" % ex)
+                logger.debug("\033[31m%s\033[0m" % ex)
 
     @lock
     def find_and_handle_stale_conversations(self):
@@ -70,7 +72,7 @@ class Performer(object):
         if conversation.retries_made < self.retries_before_giveup:
             packet = conversation.mark_retry()
             if not isinstance(packet, packets.NoOpPacket):
-                logging.debug("%s:%s Resending" % (client_host, client_port))
+                logger.debug("%s:%s Resending" % (client_host, client_port))
                 self.sock.sendto(packet.pack(), (client_host, client_port))
             return
         packet = packets.ErrorPacket(0, "Conversation Timed Out")

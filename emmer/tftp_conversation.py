@@ -12,6 +12,8 @@ WRITING = 1
 READING = 2
 COMPLETED = 3
 
+logger = logging.getLogger(__name__)
+
 
 class TFTPConversation(object):
     """A TFTPConversation represents a single conversation between one client
@@ -98,6 +100,7 @@ class TFTPConversation(object):
                 self.state = COMPLETED
                 return packets.ErrorPacket(5, "Unknown transfer tid. Host: %s, Port: %s" % (self.client_host, self.client_port))
         except Exception as e:
+            logger.error(f"Error handling initial packet: {e}",e)
             return packets.ErrorPacket(5, str(e) )
 
     def _handle_initial_read_packet(self, packet):
@@ -130,6 +133,7 @@ class TFTPConversation(object):
             self.state = COMPLETED
             return packets.ErrorPacket(1, "File not found. Host: %s, Port: %s"
                 % (self.client_host, self.client_port))
+
     def _handle_initial_write_packet(self, packet):
 
         """ Check if there is an application action to receive this message.
@@ -260,7 +264,7 @@ class TFTPConversation(object):
         self.time_of_last_interaction = new_time_of_last_interaction
 
     def log(self, request_type, comment):
-            logging.info("%s:%s - %s - %s - %s"
+            logger.info("%s:%s - %s - %s - %s"
                     % (self.client_host, self.client_port, request_type,
                         self.filename, comment))
 

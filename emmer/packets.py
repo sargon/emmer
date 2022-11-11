@@ -25,6 +25,8 @@ DATA_OPCODE = 3
 ACKNOWLEDGEMENT_OPCODE = 4
 ERROR_OPCODE = 5
 
+logger = logging.getLogger(__name__)
+
 
 def unpack_packet(packet_data):
     """Takes a tftp packet and returns the corresponding object for that type
@@ -65,7 +67,7 @@ def unpack_packet(packet_data):
             return ErrorPacket(error_code, error_message)
         # TODO: Add method for error response, Code 4, Illegal TFTP Operation
     except Exception as e:
-        logging.warn(f"Invalid packet \"{ packet_data }\"",e)
+        logger.warn(f"Invalid packet \"{ packet_data }\"",e)
     return NoOpPacket()
 
 
