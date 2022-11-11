@@ -4,6 +4,8 @@ import _thread
 from . import packets
 from .tftp_conversation import TFTPConversation
 
+logger = logging.getLogger(__name__)
+
 
 class Reactor(object):
     """A Reactor object runs the event loop and handles incoming requests. It
@@ -32,9 +34,13 @@ class Reactor(object):
         function invocation will never return.
         """
         while True:
-            data, addr = self.sock.recvfrom(1024)
-            _thread.start_new_thread(self.handle_message,
+            try:
+                data, addr = self.sock.recvfrom(1024)
+                _thread.start_new_thread(self.handle_message,
                                     (self.sock, addr, data))
+            except Exception as e:
+                logger.error(f"Reactor exception {e} ",e)
+
 
     def handle_message(self, sock, addr, data):
         """Accepts and responds (if applicable) to a message.
@@ -47,12 +53,12 @@ class Reactor(object):
         client_host = addr[0]
         client_port = addr[1]
         packet = packets.unpack_packet(data)
-        logging.debug("%s:%s:   received: %s"
+        logger.debug("%s:%s:   received: %s"
                       % (client_host, client_port, packet))
 
         # Invalid Packets are NoOp
         if isinstance(packet, packets.NoOpPacket):
-            logging.info("Invalid packet received: %s" % data)
+            logger.info("Invalid packet received: %s" % data)
             return
 
         conversation = self.get_conversation(client_host, client_port, packet)
@@ -98,5 +104,5 @@ class Reactor(object):
                 does not send anything to the client.
         """
         if not isinstance(packet, packets.NoOpPacket):
-            logging.debug("    sending: %s" % packet)
+            logger.debug("    sending: %s" % packet)
             self.sock.sendto(packet.pack(), (client_host, client_port))
