@@ -1,7 +1,9 @@
 import threading
+import logging 
 
 from .utility import lock
 
+logger = logging.getLogger(__name__)
 
 def check_for_conversation_existence(alternate_return_value):
     """A decorator that checks for a conversations existence based on the inner
@@ -50,6 +52,7 @@ class ConversationTable(object):
             client_port: The port from which the client is connecting.
             conversation: An already created TFTPConversation object.
         """
+        logger.debug(f"Add { client_host }:{ client_port } to conversation table")
         self.conversation_table[(client_host, client_port)] = conversation
 
     @lock
@@ -67,6 +70,7 @@ class ConversationTable(object):
             None if there does not exist a TFTPConversation for the given
             client.
         """
+        logger.debug(f"Lookup { client_host }:{ client_port } in conversation table")
         return self.conversation_table[(client_host, client_port)]
 
     @lock
@@ -82,6 +86,7 @@ class ConversationTable(object):
         Returns:
             True on success. False if there didn't exist a TFTPConversation.
         """
+        logger.debug(f"Remove { client_host }:{ client_port } from conversation table")
         del self.conversation_table[(client_host, client_port)]
         return True
 
