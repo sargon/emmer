@@ -4,8 +4,10 @@ def lock(function):
     """
     def decorator(self, *args):
         self.lock.acquire()
-        natural_return_value = function(self, *args)
-        self.lock.release()
-        return natural_return_value
+        try:
+            natural_return_value = function(self, *args)
+            return natural_return_value
+        finally:
+            self.lock.release()
 
     return decorator
