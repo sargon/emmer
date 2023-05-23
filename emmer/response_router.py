@@ -1,4 +1,5 @@
 import re
+import math
 
 
 class ResponseRouter(object):
@@ -119,7 +120,7 @@ class ReadBuffer(object):
         This amount is also the largest value that can be passed into
         get_block.
         """
-        return (len(self.data) / 512) + 1
+        return math.ceil(len(self.data) / 512)
 
     def get_block(self, block_num):
         """Returns the data corresponding to the given block number
