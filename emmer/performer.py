@@ -37,14 +37,14 @@ class Performer(object):
     def run(self, sleep_interval):
         while True:
             try:
-                logger.debug(self.conversation_table)
                 self.conversation_table.lock.acquire()
                 self.find_and_handle_stale_conversations()
                 self.sweep_completed_conversations()
-                self.conversation_table.lock.release()
-                time.sleep(sleep_interval)
             except Exception as ex:
                 logger.debug("\033[31m%s\033[0m" % ex)
+            finally:
+                self.conversation_table.lock.release()
+                time.sleep(sleep_interval)
 
     @lock
     def find_and_handle_stale_conversations(self):
